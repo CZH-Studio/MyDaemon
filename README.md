@@ -14,6 +14,12 @@ This daemon is particularly useful for notifying a long training task of complet
 
 ## Usage
 
+1. config email
 ```sh
-mydaemon python main.py
+mydaemon --config --from "srcEmail@example.com" --password "srcEmailSMTPPassword" --to "dstEmail@example.com"
+```
+
+2. start process
+```sh
+mydaemon "python train.py"
 ```
