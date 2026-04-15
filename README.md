@@ -12,14 +12,58 @@ This daemon can wrap any process, and when the process ends, the daemon can outp
 
 This daemon is particularly useful for notifying a long training task of completion and seeing the results directly.
 
-## Usage
+## 使用方法
 
-1. config email
-```sh
-mydaemon --config --from "srcEmail@example.com" --password "srcEmailSMTPPassword" --to "dstEmail@example.com"
-```
+1. 邮箱
 
-2. start process
-```sh
-mydaemon "python train.py"
-```
+   1. 添加邮箱
+
+      ```sh
+      mydaemon email add --from xxx@example.com --pwd SMTP_password --to yyy@example.com
+      ```
+
+   2. 列出邮箱
+
+      ```sh
+      mydaemon email ls
+      ```
+
+   3. 移除邮箱
+
+      ```
+      mydaemon email rm
+      ```
+
+      然后会进入到cli，根据提示操作即可。
+
+2. 配置
+
+   使用`mydaemon config`可修改配置，在后面添加如下参数以及值可以修改对应的配置
+
+   1. 缓存大小：`--buffer`
+   2. 日志文件名：`--log`
+   3. 邮件发送人名：`--from`
+   4. 邮件主题：`--subject`
+
+3. 启动进程
+
+   ```sh
+   mydaemon run <command> [args, ...]
+   例如
+   mydaemon run python main.py
+   ```
+## Update Log
+
+### v1.0
+
+1. 时间：2026/3/21
+2. 功能：
+   1. 支持单邮箱配置
+   2. 支持程序主要功能（守护进程，记录日志并发送邮件）
+
+### v1.1
+
+1. 时间：2026/4/15
+2. 功能：
+   1. 支持多邮箱配置
+   2. 支持配置缓存长度、日志名等

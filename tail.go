@@ -18,7 +18,6 @@ func NewTailBuffer(n int) *TailBuffer {
 func (t *TailBuffer) Add(line string) {
 	t.mu.Lock()
 	defer t.mu.Unlock()
-
 	if len(t.lines) >= t.max {
 		t.lines = t.lines[1:]
 	}
@@ -28,7 +27,6 @@ func (t *TailBuffer) Add(line string) {
 func (t *TailBuffer) Get() []string {
 	t.mu.Lock()
 	defer t.mu.Unlock()
-
 	out := make([]string, len(t.lines))
 	copy(out, t.lines)
 	return out
