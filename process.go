@@ -6,12 +6,15 @@ import (
 	"io"
 	"os"
 	"os/exec"
-	"runtime"
 	"sync"
 	"time"
-
-	"github.com/creack/pty"
 )
+
+type ProcessHandle struct {
+	Reader  io.Reader
+	Cleanup func()
+	Wait    func() (int, error)
+}
 
 func CreateLogFile(logFileName string) *os.File {
 	f, err := os.Create(logFileName)
@@ -20,21 +23,6 @@ func CreateLogFile(logFileName string) *os.File {
 		os.Exit(1)
 	}
 	return f
-}
-
-func StartProcess(cmd *exec.Cmd) (io.Reader, func(), error) {
-	if runtime.GOOS != "windows" {
-		ptmx, err := pty.Start(cmd)
-		if err == nil {
-			return ptmx, func() { _ = ptmx.Close() }, nil
-		}
-	}
-	stdout, _ := cmd.StdoutPipe()
-	stderr, _ := cmd.StderrPipe()
-	if err := cmd.Start(); err != nil {
-		return nil, nil, err
-	}
-	return io.MultiReader(stdout, stderr), func() {}, nil
 }
 
 func HandleStream(reader io.Reader, writer io.Writer, tail *TailBuffer, wg *sync.WaitGroup) {
@@ -52,25 +40,20 @@ func Run(cmdArgs []string, logFile *os.File, bufferSize int) (time.Duration, int
 	cmd := exec.Command(cmdArgs[0], cmdArgs[1:]...)
 	tail := NewTailBuffer(bufferSize)
 	start := time.Now()
-	reader, cleanup, err := StartProcess(cmd)
+	ph, err := StartProcess(cmd)
 	if err != nil {
 		fmt.Println(ErrorLaunchingProcess, err)
 		os.Exit(1)
 	}
-	defer cleanup()
 	var wg sync.WaitGroup
 	wg.Add(1)
-	go HandleStream(reader, io.MultiWriter(os.Stdout, logFile), tail, &wg)
+	go HandleStream(ph.Reader, io.MultiWriter(os.Stdout, logFile), tail, &wg)
+	exitCode, err := ph.Wait()
+	ph.Cleanup()
 	wg.Wait()
-	err = cmd.Wait()
 	duration := time.Since(start)
-	exitCode := 0
 	if err != nil {
-		if e, ok := err.(*exec.ExitError); ok {
-			exitCode = e.ExitCode()
-		} else {
-			exitCode = -1
-		}
+		exitCode = -1
 	}
 	return duration, exitCode, tail
 }

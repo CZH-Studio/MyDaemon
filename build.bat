@@ -1,5 +1,5 @@
 @echo off
-set Version=1.1
+set Version=1.2
 
 set GOOS=windows
 set GOARCH=amd64

@@ -15,43 +15,33 @@ This daemon is particularly useful for notifying a long training task of complet
 ## 使用方法
 
 1. 邮箱
-
    1. 添加邮箱
-
       ```sh
       mydaemon email add --from xxx@example.com --pwd SMTP_password --to yyy@example.com
       ```
-
    2. 列出邮箱
-
       ```sh
       mydaemon email ls
       ```
-
    3. 移除邮箱
-
       ```
       mydaemon email rm
       ```
-
       然后会进入到cli，根据提示操作即可。
-
 2. 配置
 
    使用`mydaemon config`可修改配置，在后面添加如下参数以及值可以修改对应的配置
-
    1. 缓存大小：`--buffer`
    2. 日志文件名：`--log`
    3. 邮件发送人名：`--from`
    4. 邮件主题：`--subject`
-
 3. 启动进程
-
    ```sh
    mydaemon run <command> [args, ...]
    例如
    mydaemon run python main.py
    ```
+
 ## Update Log
 
 ### v1.0
@@ -67,3 +57,10 @@ This daemon is particularly useful for notifying a long training task of complet
 2. 功能：
    1. 支持多邮箱配置
    2. 支持配置缓存长度、日志名等
+
+### v1.2
+
+1. 时间：2026/5/8
+2. 功能：
+   1. 支持Windows下的实时输出
+
